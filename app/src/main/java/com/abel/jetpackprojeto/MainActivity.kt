@@ -1,6 +1,6 @@
 package com.abel.jetpackprojeto
 
-import android.R
+
 import android.os.Bundle
 import android.provider.CalendarContract
 import androidx.activity.ComponentActivity
@@ -41,88 +41,33 @@ class MainActivity : ComponentActivity() {
             }
         }
     }
-}
 
-@OptIn(ExperimentalMaterial3Api::class)
-@Composable
-fun Home() {
-    Scaffold(
-        topBar = {
-            TopAppBar(
-                title = {
-                    Text(text = "Comece agora!", color = Color.Green)
-
-                },
-                colors = TopAppBarDefaults.topAppBarColors(
-                    containerColor = Color.Black
-                ),
-                actions = {
-                    Icon(
-                        imageVector = Icons.Rounded.Build,
-                        contentDescription = null,
-                        tint = Color.Yellow
-                    )
-                    Icon(
-                        imageVector = Icons.Rounded.Lock,
-                        contentDescription = null,
-                        tint = Color.Green
-                    )
-                }
-            )
-        },
-        bottomBar = {
-            BottomAppBar(
-                containerColor = Color.Black
-            ) {
-                BottomRightIcons()
-            }
-        }
-    ) { paddingValues ->
+    @Composable
+    fun Home() {
         Column(
             modifier = Modifier
-                .padding(paddingValues)
                 .fillMaxSize()
                 .background(Color.Black),
-            horizontalAlignment = Alignment.CenterHorizontally,
-            verticalArrangement = Arrangement.Center
+            verticalArrangement = Arrangement.Center,
+            horizontalAlignment = Alignment.CenterHorizontally
         ) {
-            Text(text = "Conteúdo da tela", color = Color.Green, fontSize = 30.sp)
-            Text(text = "Abel Antônio Pozza", color = Color.White)
-            Text(text = "Luiz Eduardo Pozza", color = Color.Yellow)
+
+            Text(
+                text = "Testando Preview",
+                fontSize = 40.sp,
+                color = Color.White
+            )
+        }
+    }
+
+
+    @Preview(showBackground = true, showSystemUi = true)
+    @Composable
+
+    fun HomePreview() {
+        JETPACKProjetoTheme() {
+            Home()
         }
     }
 }
 
-@Composable
-fun BottomRightIcons() {
-    Row(
-        modifier = Modifier
-            .fillMaxWidth()
-            .padding(all = 20.dp)
-            .background (Color.Black),
-        horizontalArrangement = Arrangement.End,
-        verticalAlignment = Alignment.CenterVertically
-    ) {
-        Icon(
-            imageVector = Icons.Rounded.Home,
-            contentDescription = "Home",
-            tint = Color.Yellow,
-            modifier = Modifier.padding(end = 16.dp)
-        )
-
-        Icon(
-            imageVector = Icons.Rounded.Build,
-            contentDescription = "Configurações",
-            tint = Color.Green
-        )
-    }
-}
-
-
-@Preview(showBackground = true)
-@Composable
-fun HomePreview() {
-    JETPACKProjetoTheme {
-        Home()
-    }
-}
