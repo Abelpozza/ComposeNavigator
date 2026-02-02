@@ -52,14 +52,18 @@ fun RedirectOptionScreen() {
 
             Text(
                 text = "Boas-vindas, Senhores!",
+                color = Color.White,
                 fontSize = 24.sp,
-                fontWeight = FontWeight.Bold
+                fontWeight = FontWeight.Bold,
+                modifier = Modifier.offset(-20.dp)
             )
 
             Spacer(modifier = Modifier.height(30.dp))
 
             OptionButton(
                 text = "📂 Meu Repositório",
+                containerColor = Color(0xFF1C1C1C),
+                contentColor = Color(0xFFB8860B),
                 onClick = {
                     openLink(
                         context,
@@ -71,7 +75,9 @@ fun RedirectOptionScreen() {
             Spacer(modifier = Modifier.height(16.dp))
 
             OptionButton(
-                text = "📞 Contato",
+                text = "\uD83D\uDCF2 Contato",
+                containerColor = Color(0xFF1C1C1C),
+                contentColor = Color(0xFFB8860B),
                 onClick = {
                     openLink(
                         context,
@@ -81,7 +87,9 @@ fun RedirectOptionScreen() {
                     Spacer(modifier = Modifier.height(16.dp))
 
                     OptionButton(
-                        text = "\uD83D\uDC63 Biografia",
+                        text = "\uD83D\uDC63 Linkedin",
+                        containerColor = Color(0xFF1C1C1C),
+                        contentColor = Color(0xFFB8860B),
                         onClick = {
                             openLink(
                                 context,
