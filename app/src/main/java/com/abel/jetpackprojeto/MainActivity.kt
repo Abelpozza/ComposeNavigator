@@ -1,18 +1,20 @@
 package com.abel.jetpackprojeto
 
-import android.R
+
 import android.content.Intent
 import android.net.Uri
 import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
+import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.*
 import androidx.compose.material3.*
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.colorResource
@@ -20,6 +22,8 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.abel.jetpackprojeto.ui.theme.JETPACKProjetoTheme
+import java.net.URL
+import androidx.core.net.toUri
 
 class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -42,98 +46,138 @@ fun RedirectOptionScreen() {
         modifier = Modifier.fillMaxSize(),
         color = Color.Black
     ) {
-        Column(
+        TopBackgroundWindow {
+            Column(
+                modifier = Modifier
+                    .fillMaxSize()
+                    .padding(24.dp),
+                verticalArrangement = Arrangement.Center,
+                horizontalAlignment = Alignment.CenterHorizontally,
+            ) {
+
+
+                Text(
+                    text = "Boas-vindas, Senhores!",
+                    color = Color.White,
+                    fontSize = 24.sp,
+                    fontWeight = FontWeight.Bold,
+                    modifier = Modifier.offset(-20.dp)
+                )
+
+                Spacer(modifier = Modifier.height(30.dp))
+
+                OptionButton(
+                    text = "📂 Meu Repositório",
+                    containerColor = Color(0xFF1C1C1C),
+                    contentColor = Color(0xFFB8860B),
+                    onClick = {
+                        openLink(
+                            context,
+                            "https://github.com/Abelpozza"
+                        )
+
+
+                    }
+                )
+
+                Spacer(modifier = Modifier.height(16.dp))
+
+                OptionButton(
+                    text = "\uD83D\uDCF2 Contato",
+                    containerColor = Color(0xFF1C1C1C),
+                    contentColor = Color(0xFFB8860B),
+                    onClick = {
+                        openLink(
+                            context,
+                            "COLOCAR LINK DO WHATSAPP AQUI"
+                        )
+                    }
+                )
+                Spacer(modifier = Modifier.height(16.dp))
+
+                OptionButton(
+                    text = "\uD83D\uDC63 Linkedin",
+                    containerColor = Color(0xFF1C1C1C),
+                    contentColor = Color(0xFFB8860B),
+                    onClick = {
+                        openLink(
+                            context,
+                            url = "https://www.linkedin.com/in/abel-antônio-pozza/"
+                        )
+                    }
+                )
+            }
+        }
+
+    }
+    }
+
+
+
+    @Composable
+    fun OptionButton(
+        text: String,
+        onClick: () -> Unit,
+        containerColor: Color = MaterialTheme.colorScheme.primary,
+        contentColor: Color = MaterialTheme.colorScheme.onPrimary
+    ) {
+        Button(
             modifier = Modifier
-                .fillMaxSize()
-                .padding(24.dp),
-            verticalArrangement = Arrangement.Center,
-            horizontalAlignment = Alignment.CenterHorizontally,
+                .fillMaxWidth()
+                .height(56.dp),
+            onClick = onClick,
+            colors = ButtonDefaults.buttonColors(
+                containerColor = containerColor,
+                contentColor = contentColor
+
+            ),
+            shape = MaterialTheme.shapes.medium
         ) {
-
             Text(
-                text = "Boas-vindas, Senhores!",
-                color = Color.White,
-                fontSize = 24.sp,
-                fontWeight = FontWeight.Bold,
-                modifier = Modifier.offset(-20.dp)
+                text = text,
+                fontSize = 16.sp,
+                fontWeight = FontWeight.Medium
             )
+        }
+    }
 
-            Spacer(modifier = Modifier.height(30.dp))
 
-            OptionButton(
-                text = "📂 Meu Repositório",
-                containerColor = Color(0xFF1C1C1C),
-                contentColor = Color(0xFFB8860B),
-                onClick = {
-                    openLink(
-                        context,
-                        "https://github.com/Abelpozza"
-                    )
-                }
-            )
+    private fun openLink(
+        context: android.content.Context,
+        url: String
+    ) {
+        val intent = Intent(Intent.ACTION_VIEW, url.toUri())
+        context.startActivity(intent)
+    }
 
-            Spacer(modifier = Modifier.height(16.dp))
-
-            OptionButton(
-                text = "\uD83D\uDCF2 Contato",
-                containerColor = Color(0xFF1C1C1C),
-                contentColor = Color(0xFFB8860B),
-                onClick = {
-                    openLink(
-                        context,
-                        "COLOCAR LINK DO WHATSAPP AQUI")
-                }
-                    )
-                    Spacer(modifier = Modifier.height(16.dp))
-
-                    OptionButton(
-                        text = "\uD83D\uDC63 Linkedin",
-                        containerColor = Color(0xFF1C1C1C),
-                        contentColor = Color(0xFFB8860B),
-                        onClick = {
-                            openLink(
-                                context,
-                                    url = "https://www.linkedin.com/in/abel-antônio-pozza/")
-                        }
-                                )
-                      }
-                }
-
+    @Composable
+    fun TopBackgroundWindow(
+        content: @Composable () -> Unit
+    ) {
+        Surface(
+            modifier = Modifier.fillMaxSize(),
+            color = Color.Gray,
+            contentColor = Color.Yellow
+        ) {
+            content()
         }
 
 
+        Box(
+            modifier = Modifier
+                .fillMaxSize()
 
-@Composable
-fun OptionButton(
-    text: String,
-    onClick: () -> Unit,
-    containerColor: Color = MaterialTheme.colorScheme.primary,
-    contentColor: Color = MaterialTheme.colorScheme.onPrimary
-) {
-    Button(
-        modifier = Modifier
-            .fillMaxWidth()
-            .height(56.dp),
-        onClick = onClick,
-        colors = ButtonDefaults.buttonColors(
-            containerColor = containerColor,
-            contentColor = contentColor
+        ) {
 
-        ),
-        shape = MaterialTheme.shapes.medium
-    ) {
-        Text(
-            text = text,
-            fontSize = 16.sp,
-            fontWeight = FontWeight.Medium
-        )
+            Box(
+                modifier = Modifier
+                    .fillMaxSize()
+                    .background(Color((0x66000000)))
+            )
+            content()
+
+        }
     }
-}
 
-private fun openLink(
-    context: android.content.Context,
-    url: String
-) {
-    val intent = Intent(Intent.ACTION_VIEW, Uri.parse(url))
-    context.startActivity(intent)
-}
+
+
