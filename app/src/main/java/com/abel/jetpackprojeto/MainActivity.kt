@@ -24,6 +24,7 @@ import androidx.compose.ui.unit.sp
 import com.abel.jetpackprojeto.ui.theme.JETPACKProjetoTheme
 import java.net.URL
 import androidx.core.net.toUri
+import com.abel.jetpackprojeto.presentation.components.TopBackgroundWindow
 
 class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -39,14 +40,16 @@ class MainActivity : ComponentActivity() {
 }
 
 @Composable
-fun RedirectOptionScreen() {
+fun RedirectOptionScreen(){
     val context = LocalContext.current
 
     Surface(
         modifier = Modifier.fillMaxSize(),
         color = Color.Black
     ) {
-        TopBackgroundWindow {
+        TopBackgroundWindow (  modifier = Modifier.fillMaxSize(),
+            backgroundColor = Color.Gray,
+            contentColor = Color.Gray){
             Column(
                 modifier = Modifier
                     .fillMaxSize()
@@ -54,8 +57,6 @@ fun RedirectOptionScreen() {
                 verticalArrangement = Arrangement.Center,
                 horizontalAlignment = Alignment.CenterHorizontally,
             ) {
-
-
                 Text(
                     text = "Boas-vindas, Senhores!",
                     color = Color.White,
@@ -63,7 +64,6 @@ fun RedirectOptionScreen() {
                     fontWeight = FontWeight.Bold,
                     modifier = Modifier.offset(-20.dp)
                 )
-
                 Spacer(modifier = Modifier.height(30.dp))
 
                 OptionButton(
@@ -75,8 +75,6 @@ fun RedirectOptionScreen() {
                             context,
                             "https://github.com/Abelpozza"
                         )
-
-
                     }
                 )
 
@@ -110,74 +108,47 @@ fun RedirectOptionScreen() {
         }
 
     }
-    }
+}
 
 
 
-    @Composable
-    fun OptionButton(
-        text: String,
-        onClick: () -> Unit,
-        containerColor: Color = MaterialTheme.colorScheme.primary,
-        contentColor: Color = MaterialTheme.colorScheme.onPrimary
+@Composable
+fun OptionButton(
+    text: String,
+    onClick: () -> Unit,
+    containerColor: Color = MaterialTheme.colorScheme.primary,
+    contentColor: Color = MaterialTheme.colorScheme.onPrimary
+) {
+    Button(
+        modifier = Modifier
+            .fillMaxWidth()
+            .height(56.dp),
+        onClick = onClick,
+        colors = ButtonDefaults.buttonColors(
+            containerColor = containerColor,
+            contentColor = contentColor
+
+        ),
+        shape = MaterialTheme.shapes.medium
     ) {
-        Button(
-            modifier = Modifier
-                .fillMaxWidth()
-                .height(56.dp),
-            onClick = onClick,
-            colors = ButtonDefaults.buttonColors(
-                containerColor = containerColor,
-                contentColor = contentColor
-
-            ),
-            shape = MaterialTheme.shapes.medium
-        ) {
-            Text(
-                text = text,
-                fontSize = 16.sp,
-                fontWeight = FontWeight.Medium
-            )
-        }
+        Text(
+            text = text,
+            fontSize = 16.sp,
+            fontWeight = FontWeight.Medium
+        )
     }
+}
 
 
-    private fun openLink(
-        context: android.content.Context,
-        url: String
-    ) {
-        val intent = Intent(Intent.ACTION_VIEW, url.toUri())
-        context.startActivity(intent)
-    }
-
-    @Composable
-    fun TopBackgroundWindow(
-        content: @Composable () -> Unit
-    ) {
-        Surface(
-            modifier = Modifier.fillMaxSize(),
-            color = Color.Gray,
-            contentColor = Color.Yellow
-        ) {
-            content()
-        }
+private fun openLink(
+    context: android.content.Context,
+    url: String
+) {
+    val intent = Intent(Intent.ACTION_VIEW, url.toUri())
+    context.startActivity(intent)
+}
 
 
-        Box(
-            modifier = Modifier
-                .fillMaxSize()
-
-        ) {
-
-            Box(
-                modifier = Modifier
-                    .fillMaxSize()
-                    .background(Color((0x66000000)))
-            )
-            content()
-
-        }
-    }
 
 
 
