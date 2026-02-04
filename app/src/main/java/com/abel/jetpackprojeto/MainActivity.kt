@@ -24,7 +24,9 @@ import androidx.compose.ui.unit.sp
 import com.abel.jetpackprojeto.ui.theme.JETPACKProjetoTheme
 import java.net.URL
 import androidx.core.net.toUri
+import com.abel.jetpackprojeto.presentation.components.OptionButton
 import com.abel.jetpackprojeto.presentation.components.TopBackgroundWindow
+import com.abel.jetpackprojeto.presentation.components.openLink
 
 class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -57,6 +59,7 @@ fun RedirectOptionScreen(){
                 verticalArrangement = Arrangement.Center,
                 horizontalAlignment = Alignment.CenterHorizontally,
             ) {
+
                 Text(
                     text = "Boas-vindas, Senhores!",
                     color = Color.White,
@@ -112,41 +115,7 @@ fun RedirectOptionScreen(){
 
 
 
-@Composable
-fun OptionButton(
-    text: String,
-    onClick: () -> Unit,
-    containerColor: Color = MaterialTheme.colorScheme.primary,
-    contentColor: Color = MaterialTheme.colorScheme.onPrimary
-) {
-    Button(
-        modifier = Modifier
-            .fillMaxWidth()
-            .height(56.dp),
-        onClick = onClick,
-        colors = ButtonDefaults.buttonColors(
-            containerColor = containerColor,
-            contentColor = contentColor
 
-        ),
-        shape = MaterialTheme.shapes.medium
-    ) {
-        Text(
-            text = text,
-            fontSize = 16.sp,
-            fontWeight = FontWeight.Medium
-        )
-    }
-}
-
-
-private fun openLink(
-    context: android.content.Context,
-    url: String
-) {
-    val intent = Intent(Intent.ACTION_VIEW, url.toUri())
-    context.startActivity(intent)
-}
 
 
 
