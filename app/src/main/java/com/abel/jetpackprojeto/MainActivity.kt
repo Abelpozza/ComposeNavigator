@@ -50,8 +50,8 @@ fun RedirectOptionScreen(){
         color = Color.Black
     ) {
         TopBackgroundWindow (  modifier = Modifier.fillMaxSize(),
-            backgroundColor = Color.Gray,
-            contentColor = Color.Gray){
+            backgroundColor = Color.DarkGray,
+            contentColor = Color.DarkGray){
             Column(
                 modifier = Modifier
                     .fillMaxSize()
