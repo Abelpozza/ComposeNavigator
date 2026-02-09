@@ -106,6 +106,7 @@ fun RedirectOptionScreen(){
                             url = "https://www.linkedin.com/in/abel-antônio-pozza/"
                         )
                     }
+
                 )
             }
         }
