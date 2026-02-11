@@ -22,6 +22,11 @@ import com.abel.jetpackprojeto.presentation.components.openLink
 import com.abel.jetpackprojeto.ui.theme.JETPACKProjetoTheme
 import androidx.compose.runtime.rememberCoroutineScope
 import kotlinx.coroutines.launch
+import androidx.lifecycle.viewmodel.compose.viewModel
+import androidx.compose.runtime.LaunchedEffect
+import com.abel.jetpackprojeto.presentation.viewmodel.RedirectViewModel
+import kotlinx.coroutines.flow.collect
+
 
 class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -42,25 +47,24 @@ fun RedirectOptionScreen() {
 
     val context = LocalContext.current
     val snackbarHostState = remember { SnackbarHostState() }
-    val scope = rememberCoroutineScope ()
+    val scope = rememberCoroutineScope()
+    val viewModel: RedirectViewModel = viewModel()
+
+    LaunchedEffect(Unit) {
+        viewModel.snackbarEvent.collect { message ->
+            snackbarHostState.showSnackbar(message)
+        }
+    }
 
     Scaffold(
         snackbarHost = { SnackbarHost(hostState = snackbarHostState) },
         containerColor = Color.Black
     ) { paddingValues ->
 
-        Column(
+        TopBackgroundWindow(
             modifier = Modifier
                 .fillMaxSize()
-                .padding(paddingValues)
-                .padding(24.dp),
-        ){}
-
-    }
-
-
-        TopBackgroundWindow(
-            modifier = Modifier.fillMaxSize(),
+                .padding(paddingValues),
             backgroundColor = Color.DarkGray,
             contentColor = Color.DarkGray
         ) {
@@ -87,17 +91,16 @@ fun RedirectOptionScreen() {
                     containerColor = Color(0xFF1C1C1C),
                     contentColor = Color(0xFFB8860B),
                     onClick = {
-                        openLink(
-                            context,
-                            "https://github.com/Abelpozza"
-                        )
+
+                        openLink(context, "https://github.com/Abelpozza")
 
                         scope.launch {
                             val result = snackbarHostState.showSnackbar(
-                                message = "Abrindo Github \uD83D\uDE80",
-                                actionLabel =  "Desfazer",
+                                message = "Abrindo Github 🚀",
+                                actionLabel = "Desfazer",
                                 duration = SnackbarDuration.Long
                             )
+
                             if (result == SnackbarResult.ActionPerformed) {
                                 snackbarHostState.showSnackbar("Ação Desfeita!")
                             }
@@ -112,10 +115,7 @@ fun RedirectOptionScreen() {
                     containerColor = Color(0xFF1C1C1C),
                     contentColor = Color(0xFFB8860B),
                     onClick = {
-                        openLink(
-                            context,
-                            "https://wa.me/5548999999999"
-                        )
+                        openLink(context, "https://wa.me/5548999999999")
                     }
                 )
 
@@ -135,6 +135,7 @@ fun RedirectOptionScreen() {
             }
         }
     }
+}
 
 
 
