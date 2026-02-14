@@ -24,6 +24,8 @@ import androidx.compose.runtime.rememberCoroutineScope
 import kotlinx.coroutines.launch
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.compose.runtime.LaunchedEffect
+import com.abel.jetpackprojeto.data.remote.ApiService
+import com.abel.jetpackprojeto.presentation.screen.ViewmodelApi.UserViewModel
 import com.abel.jetpackprojeto.presentation.viewmodel.RedirectViewModel
 import kotlinx.coroutines.flow.collect
 
@@ -43,15 +45,16 @@ class MainActivity : ComponentActivity() {
 
 
 @Composable
-fun RedirectOptionScreen() {
+fun RedirectOptionScreen(viewModel: UserViewModel = viewModel()) {
 
     val context = LocalContext.current
     val snackbarHostState = remember { SnackbarHostState() }
     val scope = rememberCoroutineScope()
-    val viewModel: RedirectViewModel = viewModel()
+    val redirectViewModel: RedirectViewModel = viewModel()
+
 
     LaunchedEffect(Unit) {
-        viewModel.snackbarEvent.collect { message ->
+        redirectViewModel.snackbarEvent.collect { message ->
             snackbarHostState.showSnackbar(message)
         }
     }
@@ -91,9 +94,11 @@ fun RedirectOptionScreen() {
                     containerColor = Color(0xFF1C1C1C),
                     contentColor = Color(0xFFB8860B),
                     onClick = {
+                        viewModel.loadPosts()
 
-                        openLink(context, "https://github.com/Abelpozza")
 
+
+                        /*openLink(context, "https://github.com/Abelpozza")
                         scope.launch {
                             val result = snackbarHostState.showSnackbar(
                                 message = "Abrindo Github 🚀",
@@ -104,7 +109,7 @@ fun RedirectOptionScreen() {
                             if (result == SnackbarResult.ActionPerformed) {
                                 snackbarHostState.showSnackbar("Ação Desfeita!")
                             }
-                        }
+                        }*/
                     }
                 )
 
