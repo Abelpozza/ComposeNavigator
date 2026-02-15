@@ -15,6 +15,9 @@ class UserViewModel : ViewModel() {
     var post = mutableStateOf<List<Post>>(emptyList())
         private set
 
+    var selectedPost = mutableStateOf<Post?>(null)
+        private set
+
     var isLoading = mutableStateOf(false)
         private set
 
@@ -23,6 +26,18 @@ class UserViewModel : ViewModel() {
             isLoading.value = true
             try {
                 post.value = api.fetchUsers()
+            } catch (e: Exception) {
+                e.printStackTrace()
+            } finally {
+                isLoading.value = false
+            }
+        }
+    }
+    fun loadPostById(id: Int) {
+        viewModelScope.launch {
+            isLoading.value = true
+            try {
+                selectedPost.value = api.fetchPostById(id)
             } catch (e: Exception) {
                 e.printStackTrace()
             } finally {

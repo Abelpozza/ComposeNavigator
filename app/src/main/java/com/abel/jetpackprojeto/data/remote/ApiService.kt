@@ -7,6 +7,7 @@ import kotlinx.coroutines.withContext
 import okhttp3.OkHttpClient
 import okhttp3.Request
 import org.json.JSONArray
+import org.json.JSONObject
 
 
 class ApiService {
@@ -45,4 +46,29 @@ class ApiService {
 
         userList
     }
+
+    suspend fun fetchPostById(postId: Int): Post? = withContext(Dispatchers.IO) {
+
+        val request = Request.Builder()
+            .url("https://jsonplaceholder.typicode.com/posts/$postId")
+            .build()
+
+        val response = client.newCall(request).execute()
+        val responseBody = response.body()?.string()
+
+        if (responseBody != null) {
+            val jsonObject = org.json.JSONObject(responseBody)
+
+            return@withContext Post(
+                userId = jsonObject.getInt("userId"),
+                id = jsonObject.getInt("id"),
+                title = jsonObject.getString("title"),
+                body = jsonObject.getString("body")
+            )
+        }
+
+        null
+    }
 }
+
+
