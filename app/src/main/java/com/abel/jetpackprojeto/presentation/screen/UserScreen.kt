@@ -12,7 +12,7 @@ import com.abel.jetpackprojeto.presentation.screen.ViewmodelApi.UserViewModel
 @Composable
 fun UserScreen(viewModel: UserViewModel = viewModel()) {
 
-    val users by viewModel.post
+    val users by viewModel.posts
     val loading by viewModel.isLoading
 
     LaunchedEffect(Unit) {

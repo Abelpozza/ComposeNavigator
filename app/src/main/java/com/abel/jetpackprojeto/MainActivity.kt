@@ -1,14 +1,14 @@
 package com.abel.jetpackprojeto
 
-
 import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
 import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.lazy.items
 import androidx.compose.material3.*
-import androidx.compose.runtime.Composable
-import androidx.compose.runtime.remember
+import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
@@ -16,19 +16,15 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.lifecycle.viewmodel.compose.viewModel
+import androidx.navigation.NavController
+import androidx.navigation.compose.*
 import com.abel.jetpackprojeto.presentation.components.OptionButton
 import com.abel.jetpackprojeto.presentation.components.TopBackgroundWindow
 import com.abel.jetpackprojeto.presentation.components.openLink
-import com.abel.jetpackprojeto.ui.theme.JETPACKProjetoTheme
-import androidx.compose.runtime.rememberCoroutineScope
-import kotlinx.coroutines.launch
-import androidx.lifecycle.viewmodel.compose.viewModel
-import androidx.compose.runtime.LaunchedEffect
-import com.abel.jetpackprojeto.data.remote.ApiService
 import com.abel.jetpackprojeto.presentation.screen.ViewmodelApi.UserViewModel
 import com.abel.jetpackprojeto.presentation.viewmodel.RedirectViewModel
-import kotlinx.coroutines.flow.collect
-
+import com.abel.jetpackprojeto.ui.theme.JETPACKProjetoTheme
 
 class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -37,21 +33,38 @@ class MainActivity : ComponentActivity() {
 
         setContent {
             JETPACKProjetoTheme {
-                RedirectOptionScreen()
+                MyApp()
             }
         }
     }
 }
 
+@Composable
+fun MyApp() {
+    val navController = rememberNavController()
+
+    NavHost(
+        navController = navController,
+        startDestination = "home"
+    ) {
+        composable("home") {
+            RedirectOptionScreen(navController)
+        }
+        composable("posts") {
+            PostsScreen()
+        }
+    }
+}
 
 @Composable
-fun RedirectOptionScreen(viewModel: UserViewModel = viewModel()) {
+fun RedirectOptionScreen(
+    navController: NavController,
+    viewModel: UserViewModel = viewModel()
+) {
 
     val context = LocalContext.current
     val snackbarHostState = remember { SnackbarHostState() }
-    val scope = rememberCoroutineScope()
     val redirectViewModel: RedirectViewModel = viewModel()
-
 
     LaunchedEffect(Unit) {
         redirectViewModel.snackbarEvent.collect { message ->
@@ -76,8 +89,7 @@ fun RedirectOptionScreen(viewModel: UserViewModel = viewModel()) {
                 modifier = Modifier
                     .fillMaxSize()
                     .padding(24.dp),
-                verticalArrangement = Arrangement.Center,
-                horizontalAlignment = Alignment.CenterHorizontally,
+                horizontalAlignment = Alignment.CenterHorizontally
             ) {
 
                 Text(
@@ -94,22 +106,7 @@ fun RedirectOptionScreen(viewModel: UserViewModel = viewModel()) {
                     containerColor = Color(0xFF1C1C1C),
                     contentColor = Color(0xFFB8860B),
                     onClick = {
-                        viewModel.loadPosts()
-
-
-
-                        /*openLink(context, "https://github.com/Abelpozza")
-                        scope.launch {
-                            val result = snackbarHostState.showSnackbar(
-                                message = "Abrindo Github 🚀",
-                                actionLabel = "Desfazer",
-                                duration = SnackbarDuration.Long
-                            )
-
-                            if (result == SnackbarResult.ActionPerformed) {
-                                snackbarHostState.showSnackbar("Ação Desfeita!")
-                            }
-                        }*/
+                        navController.navigate("posts")
                     }
                 )
 
@@ -142,11 +139,74 @@ fun RedirectOptionScreen(viewModel: UserViewModel = viewModel()) {
     }
 }
 
+@Composable
+fun PostsScreen(viewModel: UserViewModel = viewModel()) {
 
+    val posts = viewModel.posts.value
+    val isLoading = viewModel.isLoading.value
 
+    Scaffold(
+        containerColor = Color.Black
+    ) { paddingValues ->
 
+        Column(
+            modifier = Modifier
+                .fillMaxSize()
+                .padding(paddingValues)
+                .padding(16.dp)
+        ) {
 
+            Text(
+                text = "Repositório",
+                color = Color.White,
+                fontSize = 22.sp,
+                fontWeight = FontWeight.Bold
+            )
 
+            Spacer(modifier = Modifier.height(16.dp))
 
+            LaunchedEffect(Unit) {
+                viewModel.loadPosts()
+            }
 
+            if (isLoading) {
+                CircularProgressIndicator(color = Color.White)
+            }
 
+            Text(
+                text = "Quantidade: ${posts.size}",
+                color = Color.Red
+            )
+
+            if (posts.isNotEmpty()) {
+                LazyColumn(
+                    modifier = Modifier.fillMaxWidth()
+                ) {
+                    items(posts) { post ->
+                        Card(
+                            modifier = Modifier
+                                .padding(8.dp)
+                                .fillMaxWidth(),
+                            colors = CardDefaults.cardColors(
+                                containerColor = Color(0xFF1C1C1C)
+                            )
+                        ) {
+                            Column(modifier = Modifier.padding(16.dp)) {
+                                Text(
+                                    text = post.title,
+                                    style = MaterialTheme.typography.titleMedium,
+                                    color = Color(0xFFB8860B)
+                                )
+                                Spacer(modifier = Modifier.height(4.dp))
+                                Text(
+                                    text = post.body,
+                                    color = Color.White
+                                )
+                            }
+                        }
+                    }
+                }
+            }
+        }
+    }
+}
