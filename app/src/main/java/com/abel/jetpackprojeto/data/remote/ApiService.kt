@@ -2,6 +2,7 @@ package com.abel.jetpackprojeto.data.remote
 
 
 import com.abel.jetpackprojeto.data.model.Post
+import com.abel.jetpackprojeto.data.model.User
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 import okhttp3.OkHttpClient
@@ -15,7 +16,40 @@ class ApiService {
 
     private val client = OkHttpClient()
 
-    suspend fun fetchUsers(): List<Post> = withContext(Dispatchers.IO)
+    suspend fun fetchUser(): List<User> = withContext(Dispatchers.IO)
+    {
+        val request = Request.Builder()
+            .url("https://jsonplaceholder.typicode.com/users")
+            .build()
+
+        val response = client.newCall(request).execute()
+
+        val responseBody = response.body()?.string()
+
+        val userList = mutableListOf<User>()
+
+        if (responseBody != null) {
+            val jsonArray = JSONArray(responseBody)
+
+            for (i in 0 until jsonArray.length()) {
+                val item = jsonArray.getJSONObject(i)
+
+                userList.add(
+                    User(
+                        name = item.getString("name"),
+                        username = item.getString("username"),
+                        email = item.getString("email")
+
+
+                    )
+                )
+            }
+        }
+
+        userList
+    }
+
+    suspend fun fetchPosts(): List<Post> = withContext(Dispatchers.IO)
     {
         val request = Request.Builder()
             .url("https://jsonplaceholder.typicode.com/posts")

@@ -51,7 +51,7 @@ fun MyApp() {
             RedirectOptionScreen(navController)
         }
         composable("posts") {
-            PostsScreen()
+            UserScreen()
         }
     }
 }
@@ -139,10 +139,88 @@ fun RedirectOptionScreen(
     }
 }
 
-@Composable
-fun PostsScreen(viewModel: UserViewModel = viewModel()) {
+//@Composable
+//fun PostsScreen(viewModel: UserViewModel = viewModel()) {
+//
+//    val posts = viewModel.posts.value
+//    val isLoading = viewModel.isLoading.value
+//
+//    Scaffold(
+//        containerColor = Color.Black
+//    ) { paddingValues ->
+//
+//        Column(
+//            modifier = Modifier
+//                .fillMaxSize()
+//                .padding(paddingValues)
+//                .padding(16.dp)
+//        ) {
+//
+//            Text(
+//                text = "Repositório",
+//                color = Color.White,
+//                fontSize = 22.sp,
+//                fontWeight = FontWeight.Bold
+//            )
+//
+//            Spacer(modifier = Modifier.height(16.dp))
+//
+//            LaunchedEffect(Unit) {
+//                viewModel.loadPosts()
+//            }
+//
+//            if (isLoading) {
+//                CircularProgressIndicator(color = Color.White)
+//            }
+//
+//            Text(
+//                text = "Quantidade: ${posts.size}",
+//                color = Color.Red
+//            )
+//
+//            if (posts.isNotEmpty()) {
+//                LazyColumn(
+//                    modifier = Modifier.fillMaxWidth()
+//                ) {
+//                    items(posts) { post ->
+//                        Card(
+//                            modifier = Modifier
+//                                .padding(8.dp)
+//                                .fillMaxWidth(),
+//                            colors = CardDefaults.cardColors(
+//                                containerColor = Color(0xFF1C1C1C)
+//                            )
+//                        ) {
+//                            Column(modifier = Modifier.padding(16.dp)) {
+//                                Text(
+//                                    text = post.userId.toString(),
+//                                    style = MaterialTheme.typography.titleMedium,
+//                                    color = Color.Red
+//                                )
+//                                Spacer(modifier = Modifier.height(4.dp))
+//                                Text(
+//                                    text = post.title,
+//                                    style = MaterialTheme.typography.titleMedium,
+//                                    color = Color(0xFFB8860B)
+//                                )
+//                                Spacer(modifier = Modifier.height(4.dp))
+//                                Text(
+//                                    text = post.body,
+//                                    color = Color.White
+//                                )
+//                            }
+//                        }
+//                    }
+//                }
+//            }
+//        }
+//    }
+//}
 
-    val posts = viewModel.posts.value
+@Composable
+fun UserScreen(viewModel: UserViewModel = viewModel()) {
+
+    val users = viewModel.users.value
     val isLoading = viewModel.isLoading.value
 
     Scaffold(
@@ -166,7 +244,7 @@ fun PostsScreen(viewModel: UserViewModel = viewModel()) {
             Spacer(modifier = Modifier.height(16.dp))
 
             LaunchedEffect(Unit) {
-                viewModel.loadPosts()
+                viewModel.loadUsers()
             }
 
             if (isLoading) {
@@ -174,15 +252,15 @@ fun PostsScreen(viewModel: UserViewModel = viewModel()) {
             }
 
             Text(
-                text = "Quantidade: ${posts.size}",
+                text = "Quantidade: ${users.size}",
                 color = Color.Red
             )
 
-            if (posts.isNotEmpty()) {
+            if (users.isNotEmpty()) {
                 LazyColumn(
                     modifier = Modifier.fillMaxWidth()
                 ) {
-                    items(posts) { post ->
+                    items(users) { user ->
                         Card(
                             modifier = Modifier
                                 .padding(8.dp)
@@ -193,15 +271,20 @@ fun PostsScreen(viewModel: UserViewModel = viewModel()) {
                         ) {
                             Column(modifier = Modifier.padding(16.dp)) {
                                 Text(
-                                    text = post.title,
+                                    text = user.name.toString(),
+                                    style = MaterialTheme.typography.titleMedium,
+                                    color = Color.Red
+                                )
+                                Spacer(modifier = Modifier.height(4.dp))
+                                Text(
+                                    text = user.username,
                                     style = MaterialTheme.typography.titleMedium,
                                     color = Color(0xFFB8860B)
                                 )
                                 Spacer(modifier = Modifier.height(4.dp))
                                 Text(
-                                    text = post.body,
-                                    color = Color.White
-                                )
+                                    text = user.email,
+                                    color = Color.White)
                             }
                         }
                     }
@@ -210,3 +293,4 @@ fun PostsScreen(viewModel: UserViewModel = viewModel()) {
         }
     }
 }
+

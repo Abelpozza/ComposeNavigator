@@ -4,26 +4,25 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.abel.jetpackprojeto.data.model.Post
-import com.abel.jetpackprojeto.data.model.User
 import com.abel.jetpackprojeto.data.remote.ApiService
 import com.abel.jetpackprojeto.data.remote.RetrofitInstance
 import kotlinx.coroutines.launch
 
-class UserViewModel : ViewModel() {
+class PostsViewModel : ViewModel() {
 
-    var users = mutableStateOf<List<User>>(emptyList())
+    var posts = mutableStateOf<List<Post>>(emptyList())
         private set
 
     var isLoading = mutableStateOf(false)
         private set
 
-    fun loadUsers() {
+    fun loadPosts() {
         viewModelScope.launch {
             isLoading.value = true
             try {
-                val response = ApiService().fetchUser()
-               // val responseFiltered = response.filter { it.userId == 7};
-                users.value = response;
+                val response = ApiService().fetchPosts()
+                // val responseFiltered = response.filter { it.userId == 7};
+                posts.value = response;
             } catch (e: Exception) {
                 e.printStackTrace()
             }
