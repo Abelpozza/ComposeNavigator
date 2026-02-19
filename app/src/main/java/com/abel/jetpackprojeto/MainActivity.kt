@@ -18,10 +18,13 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavController
+import androidx.navigation.NavType
 import androidx.navigation.compose.*
+import androidx.navigation.navArgument
 import com.abel.jetpackprojeto.presentation.components.OptionButton
 import com.abel.jetpackprojeto.presentation.components.TopBackgroundWindow
 import com.abel.jetpackprojeto.presentation.components.openLink
+import com.abel.jetpackprojeto.presentation.screen.PostsScreen
 import com.abel.jetpackprojeto.presentation.screen.ViewmodelApi.UserViewModel
 import com.abel.jetpackprojeto.presentation.viewmodel.RedirectViewModel
 import com.abel.jetpackprojeto.ui.theme.JETPACKProjetoTheme
@@ -47,11 +50,24 @@ fun MyApp() {
         navController = navController,
         startDestination = "home"
     ) {
+
         composable("home") {
             RedirectOptionScreen(navController)
         }
-        composable("posts") {
-            UserScreen()
+
+        composable("users") {
+            UserScreen(navController)
+        }
+
+        composable(
+            route = "posts/{userId}",
+            arguments = listOf(
+                navArgument("userId") { type = NavType.IntType }
+            )
+        ) { backStackEntry ->
+
+            val userId = backStackEntry.arguments?.getInt("userId") ?: 0
+            PostsScreen(userId = userId)
         }
     }
 }
@@ -106,7 +122,7 @@ fun RedirectOptionScreen(
                     containerColor = Color(0xFF1C1C1C),
                     contentColor = Color(0xFFB8860B),
                     onClick = {
-                        navController.navigate("posts")
+                        navController.navigate("users")
                     }
                 )
 
@@ -139,86 +155,11 @@ fun RedirectOptionScreen(
     }
 }
 
-//@Composable
-//fun PostsScreen(viewModel: UserViewModel = viewModel()) {
-//
-//    val posts = viewModel.posts.value
-//    val isLoading = viewModel.isLoading.value
-//
-//    Scaffold(
-//        containerColor = Color.Black
-//    ) { paddingValues ->
-//
-//        Column(
-//            modifier = Modifier
-//                .fillMaxSize()
-//                .padding(paddingValues)
-//                .padding(16.dp)
-//        ) {
-//
-//            Text(
-//                text = "Repositório",
-//                color = Color.White,
-//                fontSize = 22.sp,
-//                fontWeight = FontWeight.Bold
-//            )
-//
-//            Spacer(modifier = Modifier.height(16.dp))
-//
-//            LaunchedEffect(Unit) {
-//                viewModel.loadPosts()
-//            }
-//
-//            if (isLoading) {
-//                CircularProgressIndicator(color = Color.White)
-//            }
-//
-//            Text(
-//                text = "Quantidade: ${posts.size}",
-//                color = Color.Red
-//            )
-//
-//            if (posts.isNotEmpty()) {
-//                LazyColumn(
-//                    modifier = Modifier.fillMaxWidth()
-//                ) {
-//                    items(posts) { post ->
-//                        Card(
-//                            modifier = Modifier
-//                                .padding(8.dp)
-//                                .fillMaxWidth(),
-//                            colors = CardDefaults.cardColors(
-//                                containerColor = Color(0xFF1C1C1C)
-//                            )
-//                        ) {
-//                            Column(modifier = Modifier.padding(16.dp)) {
-//                                Text(
-//                                    text = post.userId.toString(),
-//                                    style = MaterialTheme.typography.titleMedium,
-//                                    color = Color.Red
-//                                )
-//                                Spacer(modifier = Modifier.height(4.dp))
-//                                Text(
-//                                    text = post.title,
-//                                    style = MaterialTheme.typography.titleMedium,
-//                                    color = Color(0xFFB8860B)
-//                                )
-//                                Spacer(modifier = Modifier.height(4.dp))
-//                                Text(
-//                                    text = post.body,
-//                                    color = Color.White
-//                                )
-//                            }
-//                        }
-//                    }
-//                }
-//            }
-//        }
-//    }
-//}
-
 @Composable
-fun UserScreen(viewModel: UserViewModel = viewModel()) {
+fun UserScreen(
+    navController: NavController,
+    viewModel: UserViewModel = viewModel()
+) {
 
     val users = viewModel.users.value
     val isLoading = viewModel.isLoading.value
@@ -265,26 +206,35 @@ fun UserScreen(viewModel: UserViewModel = viewModel()) {
                             modifier = Modifier
                                 .padding(8.dp)
                                 .fillMaxWidth(),
+                            onClick = {
+                                navController.navigate("posts/${user.id}")
+                            },
                             colors = CardDefaults.cardColors(
                                 containerColor = Color(0xFF1C1C1C)
                             )
                         ) {
                             Column(modifier = Modifier.padding(16.dp)) {
+
                                 Text(
-                                    text = user.name.toString(),
+                                    text = "${user.id}",
                                     style = MaterialTheme.typography.titleMedium,
                                     color = Color.Red
                                 )
+
                                 Spacer(modifier = Modifier.height(4.dp))
+
                                 Text(
                                     text = user.username,
                                     style = MaterialTheme.typography.titleMedium,
                                     color = Color(0xFFB8860B)
                                 )
+
                                 Spacer(modifier = Modifier.height(4.dp))
+
                                 Text(
                                     text = user.email,
-                                    color = Color.White)
+                                    color = Color.White
+                                )
                             }
                         }
                     }
@@ -293,4 +243,3 @@ fun UserScreen(viewModel: UserViewModel = viewModel()) {
         }
     }
 }
-
