@@ -67,7 +67,7 @@ fun MyApp() {
         ) { backStackEntry ->
 
             val userId = backStackEntry.arguments?.getInt("userId") ?: 0
-            PostsScreen(userId = userId)
+            PostsScreen(userId = userId, navController = navController )
         }
     }
 }

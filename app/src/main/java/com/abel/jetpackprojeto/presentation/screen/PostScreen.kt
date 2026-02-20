@@ -1,23 +1,36 @@
 package com.abel.jetpackprojeto.presentation.screen
 
+import android.R
+import androidx.compose.foundation.BorderStroke
+import androidx.compose.foundation.background
+import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Add
+import androidx.compose.material.icons.filled.ArrowBack
+import androidx.compose.material.icons.filled.Home
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.painter.BrushPainter
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.lifecycle.viewmodel.compose.viewModel
+import androidx.navigation.NavController
+import androidx.navigation.compose.rememberNavController
 import com.abel.jetpackprojeto.presentation.screen.ViewmodelApi.UserViewModel
 
 @Composable
 fun PostsScreen(
     userId: Int,
-    viewModel: UserViewModel = viewModel()
+    viewModel: UserViewModel = viewModel(),
+    navController: NavController
 ) {
 
     val posts = viewModel.posts.value
@@ -54,18 +67,32 @@ fun PostsScreen(
                 }
 
                 else -> {
+
                     Column(
                         modifier = Modifier
                             .fillMaxSize()
-                            .padding(16.dp)
+                            .padding(16.dp),
+
+                        horizontalAlignment = Alignment.CenterHorizontally
+
+
                     ) {
 
-                        Text(
-                            text = "Posts do usuário $userId",
-                            color = Color.White,
-                            fontSize = 22.sp,
-                            fontWeight = FontWeight.Bold
-                        )
+
+                Column(
+                    modifier = Modifier
+                         .padding(24.dp)
+
+                ) {
+
+                    Text(
+                    text = "Posts do usuário $userId",
+                    color = Color.White,
+
+                    fontSize = 22.sp,
+                    fontWeight = FontWeight.Bold
+                ) }
+
 
                         Spacer(modifier = Modifier.height(16.dp))
 
@@ -75,11 +102,25 @@ fun PostsScreen(
                                     modifier = Modifier
                                         .padding(8.dp)
                                         .fillMaxWidth(),
+                                    onClick = {
+                                        navController.navigate("users")
+
+                                    },
                                     colors = CardDefaults.cardColors(
                                         containerColor = Color(0xFF1C1C1C)
+
+
                                     )
+
                                 ) {
                                     Column(modifier = Modifier.padding(16.dp)) {
+                                        Text(
+                                            text = post.userId.toString(),
+                                            color = Color.White,
+                                            fontWeight = FontWeight.Bold
+                                        )
+
+                                        Spacer(modifier = Modifier.height(4.dp))
 
                                         Text(
                                             text = post.title,
