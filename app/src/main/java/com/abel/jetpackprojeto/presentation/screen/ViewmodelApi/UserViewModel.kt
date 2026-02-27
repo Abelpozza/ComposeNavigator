@@ -1,50 +1,40 @@
 package com.abel.jetpackprojeto.presentation.screen.ViewmodelApi
 
-import androidx.compose.runtime.mutableStateOf
+
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.abel.jetpackprojeto.data.model.Post
 import com.abel.jetpackprojeto.data.model.User
-import com.abel.jetpackprojeto.data.remote.ApiService
+import com.abel.jetpackprojeto.data.remote.ApiClient
+import com.abel.jetpackprojeto.presentation.state.UiState
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.launch
 
 class UserViewModel : ViewModel() {
 
-    var users = mutableStateOf<List<User>>(emptyList())
-        private set
+    private val _uiState =
+        MutableStateFlow<UiState<List<User>>>(UiState.Loading)
 
-    var posts = mutableStateOf<List<Post>>(emptyList())
-        private set
-
-    var isLoading = mutableStateOf(false)
-        private set
+    val uiState: StateFlow<UiState<List<User>>> = _uiState
 
     fun loadUsers() {
         viewModelScope.launch {
-            isLoading.value = true
-            try {
-                val response = ApiService().fetchUser()
-                users.value = response
-            } catch (e: Exception) {
-                e.printStackTrace()
-            }
-            isLoading.value = false
-        }
-    }
 
-    fun loadPostsByUser(userId: Int) {
-        viewModelScope.launch {
-            isLoading.value = true
+            _uiState.value = UiState.Loading
+
             try {
-                val response = ApiService().fetchPosts()
-                posts.value = response.filter { post ->
-                    post.userId == userId
-                }
+                val users = ApiClient.api.getUsers()
+                _uiState.value = UiState.Success(users)
+
             } catch (e: Exception) {
-                e.printStackTrace()
+                _uiState.value =
+                    UiState.Error("Erro ao carregar usuários")
             }
-            isLoading.value = false
         }
     }
-        }
+}
+
+
+
 

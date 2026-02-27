@@ -1,40 +1,30 @@
-package com.abel.jetpackprojeto.presentation.screen
-
-import android.R
-import androidx.compose.foundation.BorderStroke
-import androidx.compose.foundation.background
-import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.Add
-import androidx.compose.material.icons.filled.ArrowBack
-import androidx.compose.material.icons.filled.Home
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.graphics.painter.BrushPainter
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavController
-import androidx.navigation.compose.rememberNavController
-import com.abel.jetpackprojeto.presentation.screen.ViewmodelApi.UserViewModel
+import com.abel.jetpackprojeto.data.model.Post
+import com.abel.jetpackprojeto.presentation.screen.ViewmodelApi.PostViewModel
+import com.abel.jetpackprojeto.presentation.state.UiState
+import androidx.lifecycle.viewmodel.compose.viewModel
 
 @Composable
 fun PostsScreen(
     userId: Int,
-    viewModel: UserViewModel = viewModel(),
     navController: NavController
 ) {
 
-    val posts = viewModel.posts.value
-    val isLoading = viewModel.isLoading.value
+    val viewModel: PostViewModel = viewModel() //
+
+    val state by viewModel.uiState.collectAsState()
 
     LaunchedEffect(userId) {
         viewModel.loadPostsByUser(userId)
@@ -42,98 +32,91 @@ fun PostsScreen(
 
     Scaffold(
         containerColor = Color.Black
-    ) { paddingValues ->
+    ) { padding ->
 
         Box(
             modifier = Modifier
                 .fillMaxSize()
-                .padding(paddingValues)
+                .padding(padding)
         ) {
 
-            when {
-                isLoading -> {
+            when (state) {
+
+                is UiState.Loading -> {
                     CircularProgressIndicator(
                         color = Color.White,
                         modifier = Modifier.align(Alignment.Center)
                     )
                 }
 
-                posts.isEmpty() -> {
+                is UiState.Error -> {
                     Text(
-                        text = "Nenhum post encontrado",
+                        text = "Erro ao carregar posts",
                         color = Color.White,
                         modifier = Modifier.align(Alignment.Center)
                     )
                 }
 
-                else -> {
+                is UiState.Success -> {
 
-                    Column(
-                        modifier = Modifier
-                            .fillMaxSize()
-                            .padding(16.dp),
+                    val posts =
+                        (state as UiState.Success<List<Post>>).data
 
-                        horizontalAlignment = Alignment.CenterHorizontally
+                    if (posts.isEmpty()) {
+                        Text(
+                            text = "Nenhum post encontrado",
+                            color = Color.White,
+                            modifier = Modifier.align(Alignment.Center)
+                        )
+                    } else {
 
+                        Column(
+                            modifier = Modifier
+                                .fillMaxSize()
+                                .padding(16.dp),
+                            horizontalAlignment = Alignment.CenterHorizontally
+                        ) {
 
-                    ) {
+                            Text(
+                                text = "Posts do usuário $userId",
+                                color = Color.White,
+                                fontSize = 22.sp,
+                                fontWeight = FontWeight.Bold
+                            )
 
+                            Spacer(modifier = Modifier.height(16.dp))
 
-                Column(
-                    modifier = Modifier
-                         .padding(24.dp)
+                            LazyColumn {
+                                items(posts) { post ->
 
-                ) {
-
-                    Text(
-                    text = "Posts do usuário $userId",
-                    color = Color.White,
-
-                    fontSize = 22.sp,
-                    fontWeight = FontWeight.Bold
-                ) }
-
-
-                        Spacer(modifier = Modifier.height(16.dp))
-
-                        LazyColumn {
-                            items(posts) { post ->
-                                Card(
-                                    modifier = Modifier
-                                        .padding(8.dp)
-                                        .fillMaxWidth(),
-                                    onClick = {
-                                        navController.navigate("users")
-
-                                    },
-                                    colors = CardDefaults.cardColors(
-                                        containerColor = Color(0xFF1C1C1C)
-
-
-                                    )
-
-                                ) {
-                                    Column(modifier = Modifier.padding(16.dp)) {
-                                        Text(
-                                            text = post.userId.toString(),
-                                            color = Color.White,
-                                            fontWeight = FontWeight.Bold
+                                    Card(
+                                        modifier = Modifier
+                                            .padding(8.dp)
+                                            .fillMaxWidth(),
+                                        colors = CardDefaults.cardColors(
+                                            containerColor = Color(0xFF1C1C1C)
                                         )
+                                    ) {
 
-                                        Spacer(modifier = Modifier.height(4.dp))
+                                        Column(
+                                            modifier = Modifier.padding(16.dp)
+                                        ) {
 
-                                        Text(
-                                            text = post.title,
-                                            color = Color(0xFFB8860B),
-                                            fontWeight = FontWeight.Bold
-                                        )
+                                            Text(
+                                                text = post.title,
+                                                color = Color(0xFFB8860B),
+                                                fontWeight = FontWeight.Bold
+                                            )
 
-                                        Spacer(modifier = Modifier.height(4.dp))
+                                            Spacer(
+                                                modifier = Modifier.height(4.dp)
+                                            )
 
-                                        Text(
-                                            text = post.body,
-                                            color = Color.White
-                                        )
+                                            Text(
+                                                text = post.body,
+                                                color = Color.White
+                                            )
+                                        }
                                     }
                                 }
                             }

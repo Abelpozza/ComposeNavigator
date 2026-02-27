@@ -1,5 +1,6 @@
 package com.abel.jetpackprojeto
 
+import PostsScreen
 import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
@@ -21,12 +22,14 @@ import androidx.navigation.NavController
 import androidx.navigation.NavType
 import androidx.navigation.compose.*
 import androidx.navigation.navArgument
+import com.abel.jetpackprojeto.data.model.User
 import com.abel.jetpackprojeto.presentation.components.OptionButton
 import com.abel.jetpackprojeto.presentation.components.TopBackgroundWindow
 import com.abel.jetpackprojeto.presentation.components.openLink
 import com.abel.jetpackprojeto.presentation.screen.PostsScreen
 import com.abel.jetpackprojeto.presentation.screen.ViewmodelApi.UserViewModel
 import com.abel.jetpackprojeto.presentation.viewmodel.RedirectViewModel
+import com.abel.jetpackprojeto.presentation.state.UiState
 import com.abel.jetpackprojeto.ui.theme.JETPACKProjetoTheme
 
 class MainActivity : ComponentActivity() {
@@ -44,11 +47,13 @@ class MainActivity : ComponentActivity() {
 
 @Composable
 fun MyApp() {
+
     val navController = rememberNavController()
+    val userViewModel: UserViewModel = viewModel()
 
     NavHost(
         navController = navController,
-        startDestination = "home"
+        startDestination = "home" // ✅ AGORA COMEÇA NA HOME
     ) {
 
         composable("home") {
@@ -56,7 +61,10 @@ fun MyApp() {
         }
 
         composable("users") {
-            UserScreen(navController)
+            UserScreen(
+                navController = navController,
+                viewModel = userViewModel
+            )
         }
 
         composable(
@@ -66,16 +74,20 @@ fun MyApp() {
             )
         ) { backStackEntry ->
 
-            val userId = backStackEntry.arguments?.getInt("userId") ?: 0
-            PostsScreen(userId = userId, navController = navController )
+            val userId =
+                backStackEntry.arguments?.getInt("userId") ?: 0
+
+            PostsScreen(
+                userId = userId,
+                navController = navController
+            )
         }
     }
 }
 
 @Composable
 fun RedirectOptionScreen(
-    navController: NavController,
-    viewModel: UserViewModel = viewModel()
+    navController: NavController
 ) {
 
     val context = LocalContext.current
@@ -158,11 +170,14 @@ fun RedirectOptionScreen(
 @Composable
 fun UserScreen(
     navController: NavController,
-    viewModel: UserViewModel = viewModel()
+    viewModel: UserViewModel
 ) {
 
-    val users = viewModel.users.value
-    val isLoading = viewModel.isLoading.value
+    val state by viewModel.uiState.collectAsState()
+
+    LaunchedEffect(Unit) {
+        viewModel.loadUsers()
+    }
 
     Scaffold(
         containerColor = Color.Black
@@ -184,57 +199,69 @@ fun UserScreen(
 
             Spacer(modifier = Modifier.height(16.dp))
 
-            LaunchedEffect(Unit) {
-                viewModel.loadUsers()
-            }
+            when (state) {
 
-            if (isLoading) {
-                CircularProgressIndicator(color = Color.White)
-            }
+                is UiState.Loading -> {
+                    CircularProgressIndicator(color = Color.White)
+                }
 
-            Text(
-                text = "Quantidade: ${users.size}",
-                color = Color.Red
-            )
+                is UiState.Error -> {
+                    Text(
+                        text = "Erro ao carregar usuários",
+                        color = Color.White
+                    )
+                }
 
-            if (users.isNotEmpty()) {
-                LazyColumn(
-                    modifier = Modifier.fillMaxWidth()
-                ) {
-                    items(users) { user ->
-                        Card(
-                            modifier = Modifier
-                                .padding(8.dp)
-                                .fillMaxWidth(),
-                            onClick = {
-                                navController.navigate("posts/${user.id}")
-                            },
-                            colors = CardDefaults.cardColors(
-                                containerColor = Color(0xFF1C1C1C)
-                            )
-                        ) {
-                            Column(modifier = Modifier.padding(16.dp)) {
+                is UiState.Success -> {
 
-                                Text(
-                                    text = "${user.id}",
-                                    style = MaterialTheme.typography.titleMedium,
-                                    color = Color.Red
+                    val users =
+                        (state as UiState.Success<List<User>>).data
+
+                    Text(
+                        text = "Quantidade: ${users.size}",
+                        color = Color.Red
+                    )
+
+                    Spacer(modifier = Modifier.height(8.dp))
+
+                    LazyColumn {
+                        items(users) { user ->
+
+                            Card(
+                                modifier = Modifier
+                                    .padding(8.dp)
+                                    .fillMaxWidth(),
+                                onClick = {
+                                    navController.navigate("posts/${user.id}")
+                                },
+                                colors = CardDefaults.cardColors(
+                                    containerColor = Color(0xFF1C1C1C)
                                 )
+                            ) {
 
-                                Spacer(modifier = Modifier.height(4.dp))
+                                Column(
+                                    modifier = Modifier.padding(16.dp)
+                                ) {
 
-                                Text(
-                                    text = user.username,
-                                    style = MaterialTheme.typography.titleMedium,
-                                    color = Color(0xFFB8860B)
-                                )
+                                    Text(
+                                        text = "${user.id}",
+                                        color = Color.Red
+                                    )
 
-                                Spacer(modifier = Modifier.height(4.dp))
+                                    Spacer(modifier = Modifier.height(4.dp))
 
-                                Text(
-                                    text = user.email,
-                                    color = Color.White
-                                )
+                                    Text(
+                                        text = user.username,
+                                        color = Color(0xFFB8860B)
+                                    )
+
+                                    Spacer(modifier = Modifier.height(4.dp))
+
+                                    Text(
+                                        text = user.email,
+                                        color = Color.White
+                                    )
+                                }
                             }
                         }
                     }
